@@ -1,109 +1,132 @@
-# SBP-Projection Acoustics
+# High-order Acoustics with SBP–Projection (MATLAB)
 
-Stable high-order finite-difference solvers for the **acoustic wave equation** using the **SBP-Projection method**.  
-This repository collects the code, experiments, and selected figures from our course project in scientific computing for PDEs.
+High-order **SBP–Projection** finite-difference methods for the acoustic wave equation in **1D and 2D**, with emphasis on **stability**, **well-posed boundary/interface conditions**, **eigenvalue/CFL analysis**, and **RK4** time integration.
 
-📄 **Project report (PDF):** `report/Projekt_1_Bervet_PDE.pdf`
+**Course:** 1TD354 — Scientific Computing for Partial Differential Equations  
+**Institution:** Uppsala University  
+**Language:** MATLAB
 
 ---
 
 ## Overview
 
-We study and implement provably stable SBP-Projection discretizations for the acoustic wave equation, focusing on:
+This repository collects code and selected results from a course project on **provably stable** high-order finite-difference discretizations of the acoustic wave equation using **Summation-By-Parts (SBP)** operators combined with the **Projection method** for imposing boundary and interface conditions.
 
-- **Well-posed boundary conditions** (Dirichlet & characteristic)
-- **High-order SBP finite differences** (central and upwind variants)
-- **Energy stability via the energy method**
-- **Eigenvalue spectra and RK4 CFL estimates**
-- Time integration using **4th-order Runge–Kutta (RK4)**
+Key goals:
+- Verify **well-posedness** of boundary conditions using energy arguments
+- Construct **stable semi-discrete** operators via SBP–Projection
+- Study stability via **eigenvalues** and derive **RK4 CFL** constraints
+- Run time simulations in **1D and 2D**, including **heterogeneous media**
+- Perform **convergence studies** (where applicable)
 
-The implementation is primarily in **MATLAB**.
-
----
-
-## Model problem
-
-### 1D acoustic wave equation (bounded domain)
-
-We consider the 1D acoustic system on a bounded interval with an absorption term:
-
-- State: \(u = (p, v)^T\), where \(p\) is pressure and \(v\) is particle velocity  
-- Material parameters: density \(\rho(x)\), sound speed \(c(x)\), absorption \(\beta(x)\ge 0\)
-
-Boundary conditions are written in the general form
-\[
-p + a_\ell v = 0 \ \text{at } x=x_\ell,
-\qquad
-p + a_r v = 0 \ \text{at } x=x_r.
-\]
-
-A key result from the energy method is the well-posedness condition:
-- \(a_\ell \ge 0\)
-- \(a_r \le 0\)
-
-Characteristic boundary conditions correspond to choosing incoming characteristic variables to be zero, which yields:
-\[
-a_\ell = \rho c, \qquad a_r = -\rho c.
-\]
-
-(See report for full derivations and energy estimates.)
+> This is a project codebase: focused on clarity and reproducibility rather than being a general-purpose solver library.
 
 ---
 
-## Method: SBP-Projection
+## Highlights
 
-Boundary conditions are imposed strongly using a projection operator of the form
-\[
-P = I - \bar{H}L^T (L\bar{H}L^T)^{-1} L,
-\]
-so the semi-discrete system becomes
-\[
-u_t = -P\,C^{-1}(D_x + D)\,P u.
-\]
-
-We test both:
-- **central SBP** derivative operators, and
-- **upwind SBP** operators \(D^\pm\),
-
-and verify that the resulting schemes satisfy a discrete energy estimate.
+- ✅ SBP–Projection enforcement of boundary conditions (energy stable)
+- ✅ Eigenvalue spectra of the semi-discrete operator (stability diagnostics)
+- ✅ 2D implementation using **Kronecker products** and sparse matrices
+- ✅ RK4 time stepping with practical CFL choices
+- ✅ Wave propagation experiments (homogeneous + heterogeneous setups)
 
 ---
 
-## Numerical stability & CFL (RK4)
+## Selected results
 
-To assess time-step restrictions, we rewrite the semi-discrete system as:
-\[
-u_t = M u,
-\]
-compute eigenvalues of \(M\), and use the RK4 stability radius \(R \approx 2.78\) to estimate a stable time step:
-\[
-k|\lambda| \le R \quad \Rightarrow \quad \alpha = \frac{k}{h} \approx \frac{2.78}{|\lambda|h}.
-\]
-
-In the report, this yields a CFL estimate of approximately **α ≈ 1.593** for the tested SBP-Projection setup.
-
----
-
-## Results (figures)
-
-All figures shown in this README are expected to live in `figures/`.
-
-> Add your images to `figures/` and update the filenames below.
-
-### Eigenvalues of the semi-discrete operator
+### Eigenvalue stability (semi-discrete operator)
 
 <p align="center">
-  <img src="figures/eigs_dirichlet_bc1.png" width="31%">
-  <img src="figures/eigs_dirichlet_bc2.png" width="31%">
-  <img src="figures/eigs_characteristic.png" width="31%">
+  <img src="figures/Eigval_Char_BC.png" width="48%">
+  <img src="figures/Eigval_Dir_BC_1.png" width="48%">
 </p>
-<p align="center"><em>Eigenvalue plots of hM for different boundary conditions.</em></p>
-
-### Example wave propagation / solution snapshots (optional)
-
 <p align="center">
-  <img src="figures/wave_solution.png" width="75%">
+  <em>Eigenvalues of h·M for characteristic vs. Dirichlet boundary treatments (example).</em>
 </p>
 
 ---
 
+### 2D pressure snapshots (Gaussian initial pressure)
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="figures/Pressure_dist_t0.png" width="100%">
+      <br><em>t = 0</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="figures/Pressure_dist_t1.png" width="100%">
+      <br><em>t = 1</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="figures/Pressure_dist_t2.png" width="100%">
+      <br><em>t = 2</em>
+    </td>
+  </tr>
+</table>
+
+<p align="center">
+  <em>Pressure field p(x,y,t) on Ω = [−1,1]×[−1,1] using SBP operators + RK4.</em>
+</p>
+
+---
+
+### Heterogeneous media examples (selected)
+
+<p align="center">
+  <img src="figures/Pressure_dist_t2_cL1_cR01_rohL1_rohR1_beta0.png" width="49%">
+  <img src="figures/Pressure_dist_t2_cL1_cR4_rohL1_rohR01_beta4.png" width="49%">
+</p>
+
+<p align="center">
+  <img src="figures/Pressure_dist_t2_beta4_cp1.png" width="49%">
+  <img src="figures/Pressure_dist_t2_cL1_cR01_rohL1_rohR01_beta4.png" width="49%">
+</p>
+
+<p align="center">
+  <em>Examples with piecewise material parameters (ρ, c) and absorption β.</em>
+</p>
+
+---
+
+### Velocity example
+
+<p align="center">
+  <img src="figures/Velocity_dist_rohR01_rohL1.png" width="85%">
+</p>
+<p align="center">
+  <em>Velocity distribution at t = 2 (example).</em>
+</p>
+
+---
+
+## Model and discretization (short technical summary)
+
+### 2D acoustic system (example form)
+We work with a first-order system in 2D with state
+`u = [p, v, w]^T` (pressure + velocities),
+and a semi-discrete SBP–Projection formulation of the form:
+
+- Construct SBP operators in x/y directions using Kronecker products:
+  - `Dx = D ⊗ I`, `Dy = I ⊗ D`
+- Enforce boundary conditions using a projection `P`
+- Advance in time with RK4:
+  - `u_t = - P * C^{-1} (Dx + Dy + D) * P * u`
+
+Implementation uses **sparse matrices** throughout for performance.
+
+---
+
+## Repository structure
+
+```text
+.
+├── theory/                 # derivations, notes, assignment text (optional)
+│   ├── Assignment_1/
+│   └── Assignment_3/
+├── code/                   # MATLAB source (functions + scripts)
+│   ├── Assignment_1/
+│   └── Assignment_3/
+├── figures/                # all images shown in README
+└── README.md
