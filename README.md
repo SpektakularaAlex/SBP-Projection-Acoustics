@@ -118,15 +118,3 @@ Implementation uses **sparse matrices** throughout for performance.
 
 ---
 
-## Repository structure
-
-```text
-.
-├── theory/                 # derivations, notes, assignment text (optional)
-│   ├── Assignment_1/
-│   └── Assignment_3/
-├── code/                   # MATLAB source (functions + scripts)
-│   ├── Assignment_1/
-│   └── Assignment_3/
-├── figures/                # all images shown in README
-└── README.md
